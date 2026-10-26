@@ -1,0 +1,30 @@
+# Visual Studio caches and build output
+.vs/
+**/.vs/
+Debug/
+**/Debug/
+Release/
+**/Release/
+x64/
+**/x64/
+Win32/
+**/Win32/
+*.vcxproj.user
+*.suo
+*.user
+*.pdb
+*.ilk
+*.idb
+*.ipch
+*.tlog/
+*.recipe
+*.exp
+*.obj.dt.*
+
+# Blender backup files
+*.blend1
+
+# Local secrets and environment settings
+.env
+.env.*
+!.env.example

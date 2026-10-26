@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="TenisDeMesa3D/TenisDeMesa3D.vcxproj" Id="55603fe3-adcf-4b87-987e-c7582ac0bcec" />
+</Solution>
