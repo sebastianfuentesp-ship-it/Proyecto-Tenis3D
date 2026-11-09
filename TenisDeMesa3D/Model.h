@@ -169,6 +169,7 @@ private:
         }
 
         glm::vec3 baseColor(0.8f, 0.8f, 0.8f);
+        glm::vec3 emissiveColor(0.0f, 0.0f, 0.0f);
 
         if (mesh->mMaterialIndex < scene->mNumMaterials)
         {
@@ -187,6 +188,16 @@ private:
                     diffuseColor.g,
                     diffuseColor.b
                 );
+            }
+
+            aiColor3D emissive(0.0f, 0.0f, 0.0f);
+
+            if (material->Get(
+                AI_MATKEY_COLOR_EMISSIVE,
+                emissive
+            ) == AI_SUCCESS)
+            {
+                emissiveColor = glm::vec3(emissive.r, emissive.g, emissive.b);
             }
 
             std::vector<Texture> diffuseMaps =
@@ -221,7 +232,7 @@ private:
             );
         }
 
-        return Mesh(vertices, indices, textures, baseColor);
+        return Mesh(vertices, indices, textures, baseColor, emissiveColor);
     }
 
     std::vector<Texture> loadMaterialTextures(

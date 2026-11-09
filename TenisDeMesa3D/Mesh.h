@@ -32,17 +32,20 @@ public:
     std::vector<GLuint> indices;
     std::vector<Texture> textures;
     glm::vec3 baseColor;
+    glm::vec3 emissiveColor;   // Ke del .mtl (lámparas, marcador...)
 
     Mesh(
         const std::vector<Vertex>& vertices,
         const std::vector<GLuint>& indices,
         const std::vector<Texture>& textures,
-        const glm::vec3& baseColor = glm::vec3(1.0f)
+        const glm::vec3& baseColor = glm::vec3(1.0f),
+        const glm::vec3& emissiveColor = glm::vec3(0.0f)
     )
         : vertices(vertices),
         indices(indices),
         textures(textures),
-        baseColor(baseColor)
+        baseColor(baseColor),
+        emissiveColor(emissiveColor)
     {
         setupMesh();
     }
@@ -90,6 +93,13 @@ public:
             glGetUniformLocation(shader.Program, "baseColor"),
             1,
             &baseColor[0]
+        );
+
+        // Color emisivo del material (0 para casi todo; las lámparas brillan).
+        glUniform3fv(
+            glGetUniformLocation(shader.Program, "emissiveColor"),
+            1,
+            &emissiveColor[0]
         );
 
         glUniform1i(

@@ -1,171 +1,48 @@
 #version 330 core
 
-#define NUMBER_OF_POINT_LIGHTS 4
-
-struct Material
-{
-    sampler2D diffuse;
-    sampler2D specular;
-    float shininess;
-};
-
-struct DirLight
-{
-    vec3 direction;
-    
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;
-};
-
-struct PointLight
-{
-    vec3 position;
-    
-    float constant;
-    float linear;
-    float quadratic;
-    
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;
-};
-
-struct SpotLight
-{
-    vec3 position;
-    vec3 direction;
-    float cutOff;
-    float outerCutOff;
-    
-    float constant;
-    float linear;
-    float quadratic;
-    
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;
-};
-
 in vec3 FragPos;
 in vec3 Normal;
 in vec2 TexCoords;
 
 out vec4 color;
 
-uniform vec3 viewPos;
-uniform DirLight dirLight;
-uniform PointLight pointLights[NUMBER_OF_POINT_LIGHTS];
-uniform SpotLight spotLight;
-uniform Material material;
-uniform int transparency;
+uniform vec3 baseColor;
+uniform vec3 objectColor;
+uniform int hasDiffuseTexture;
+uniform sampler2D texture_diffuse1;
 
-// Function prototypes
-vec3 CalcDirLight( DirLight light, vec3 normal, vec3 viewDir );
-vec3 CalcPointLight( PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir );
-vec3 CalcSpotLight( SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir );
-
-void main( )
+void main()
 {
-    // Properties
-    vec3 norm = normalize( Normal );
-    vec3 viewDir = normalize( viewPos - FragPos );
-    
-    // Directional lighting
-    vec3 result = CalcDirLight( dirLight, norm, viewDir );
-    
-    // Point lights
-    for ( int i = 0; i < NUMBER_OF_POINT_LIGHTS; i++ )
+    vec3 albedo = baseColor;
+
+    if (hasDiffuseTexture == 1)
     {
-        result += CalcPointLight( pointLights[i], norm, FragPos, viewDir );
+        albedo = texture(texture_diffuse1, TexCoords).rgb;
     }
-    
-    // Spot light
-    result += CalcSpotLight( spotLight, norm, FragPos, viewDir );
- 	
-    color = vec4( result,texture(material.diffuse, TexCoords).rgb );
-	  if(color.a < 0.1 && transparency==1)
-        discard;
 
-}
+    if (length(albedo) < 0.001)
+    {
+        albedo = vec3(1.0);
+    }
 
-// Calculates the color when using a directional light.
-vec3 CalcDirLight( DirLight light, vec3 normal, vec3 viewDir )
-{
-    vec3 lightDir = normalize( -light.direction );
-    
-    // Diffuse shading
-    float diff = max( dot( normal, lightDir ), 0.0 );
-    
-    // Specular shading
-    vec3 reflectDir = reflect( -lightDir, normal );
-    float spec = pow( max( dot( viewDir, reflectDir ), 0.0 ), material.shininess );
-    
-    // Combine results
-    vec3 ambient = light.ambient * vec3( texture( material.diffuse, TexCoords ) );
-    vec3 diffuse = light.diffuse * diff * vec3( texture( material.diffuse, TexCoords ) );
-    vec3 specular = light.specular * spec * vec3( texture( material.specular, TexCoords ) );
-    
-    return ( ambient + diffuse + specular );
-}
+    // Si la sub-malla tiene textura de piel/cabello o un color base distinto de blanco,
+    // se mantiene su color original sin aplicar el tinte.
+    vec3 tint = objectColor;
 
-// Calculates the color when using a point light.
-vec3 CalcPointLight( PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir )
-{
-    vec3 lightDir = normalize( light.position - fragPos );
-    
-    // Diffuse shading
-    float diff = max( dot( normal, lightDir ), 0.0 );
-    
-    // Specular shading
-    vec3 reflectDir = reflect( -lightDir, normal );
-    float spec = pow( max( dot( viewDir, reflectDir ), 0.0 ), material.shininess );
-    
-    // Attenuation
-    float distance = length( light.position - fragPos );
-    float attenuation = 1.0f / ( light.constant + light.linear * distance + light.quadratic * ( distance * distance ) );
-    
-    // Combine results
-    vec3 ambient = light.ambient * vec3( texture( material.diffuse, TexCoords ) );
-    vec3 diffuse = light.diffuse * diff * vec3( texture( material.diffuse, TexCoords ) );
-    vec3 specular = light.specular * spec * vec3( texture( material.specular, TexCoords ) );
-    
-    ambient *= attenuation;
-    diffuse *= attenuation;
-    specular *= attenuation;
-    
-    return ( ambient + diffuse + specular );
-}
+    // Detectar si la parte renderizada no es la ropa (piel, cabello o textura cargada)
+    bool esPielOCabello = (hasDiffuseTexture == 1) || 
+                          (baseColor.r > 0.6 && baseColor.g > 0.4 && baseColor.b < 0.6);
 
-// Calculates the color when using a spot light.
-vec3 CalcSpotLight( SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir )
-{
-    vec3 lightDir = normalize( light.position - fragPos );
-    
-    // Diffuse shading
-    float diff = max( dot( normal, lightDir ), 0.0 );
-    
-    // Specular shading
-    vec3 reflectDir = reflect( -lightDir, normal );
-    float spec = pow( max( dot( viewDir, reflectDir ), 0.0 ), material.shininess );
-    
-    // Attenuation
-    float distance = length( light.position - fragPos );
-    float attenuation = 1.0f / ( light.constant + light.linear * distance + light.quadratic * ( distance * distance ) );
-    
-    // Spotlight intensity
-    float theta = dot( lightDir, normalize( -light.direction ) );
-    float epsilon = light.cutOff - light.outerCutOff;
-    float intensity = clamp( ( theta - light.outerCutOff ) / epsilon, 0.0, 1.0 );
-    
-    // Combine results
-    vec3 ambient = light.ambient * vec3( texture( material.diffuse, TexCoords ) );
-    vec3 diffuse = light.diffuse * diff * vec3( texture( material.diffuse, TexCoords ) );
-    vec3 specular = light.specular * spec * vec3( texture( material.specular, TexCoords ) );
-    
-    ambient *= attenuation * intensity;
-    diffuse *= attenuation * intensity;
-    specular *= attenuation * intensity;
-    
-    return ( ambient + diffuse + specular );
+    if (esPielOCabello)
+    {
+        tint = vec3(1.0, 1.0, 1.0); // Mantiene piel y cabello intactos
+    }
+
+    vec3 norm = normalize(Normal);
+    vec3 lightDir = normalize(vec3(-0.4, 1.0, 0.3));
+
+    float diffuse = max(dot(norm, lightDir), 0.0);
+    float illumination = 0.65 + 0.45 * diffuse;
+
+    color = vec4(albedo * illumination * tint, 1.0);
 }

@@ -1,0 +1,5 @@
+# Keyframes de animacion y luces: animTime lightMode spotOn dirOn duration
+31.4955 1 0 0 0
+19.4388 1 0 0 3
+19.2449 1 0 0 3
+54.369 1 0 0 3
