@@ -23,34 +23,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="tenis.vs">
+    <None Include="Shader\tenis.vs">
       <Filter>Archivos de origen\Shader</Filter>
     </None>
-    <None Include="tenis.frag">
-      <Filter>Archivos de origen\Shader</Filter>
-    </None>
-    <None Include="Shader\core.frag">
-      <Filter>Archivos de origen\Shader</Filter>
-    </None>
-    <None Include="Shader\core.vs">
-      <Filter>Archivos de origen\Shader</Filter>
-    </None>
-    <None Include="Shader\lamp.frag">
-      <Filter>Archivos de origen\Shader</Filter>
-    </None>
-    <None Include="Shader\lamp.vs">
-      <Filter>Archivos de origen\Shader</Filter>
-    </None>
-    <None Include="Shader\lighting.frag">
-      <Filter>Archivos de origen\Shader</Filter>
-    </None>
-    <None Include="Shader\lighting.vs">
-      <Filter>Archivos de origen\Shader</Filter>
-    </None>
-    <None Include="Shader\modelLoading.frag">
-      <Filter>Archivos de origen\Shader</Filter>
-    </None>
-    <None Include="Shader\modelLoading.vs">
+    <None Include="Shader\tenis.frag">
       <Filter>Archivos de origen\Shader</Filter>
     </None>
   </ItemGroup>
@@ -68,6 +44,12 @@
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
     <ClInclude Include="Animacion.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="Keyframes.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
+    <ClInclude Include="Marcador.h">
       <Filter>Archivos de encabezado</Filter>
     </ClInclude>
   </ItemGroup>

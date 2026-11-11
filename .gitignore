@@ -3,12 +3,20 @@
 **/.vs/
 Debug/
 **/Debug/
-Release/
+/Release/
 **/Release/
+!External Libraries/GLEW/lib/Release/
+!External Libraries/GLEW/lib/Release/**
+!External Libraries/GLEW/bin/Release/
+!External Libraries/GLEW/bin/Release/**
 x64/
 **/x64/
-Win32/
+/Win32/
 **/Win32/
+!External Libraries/GLEW/lib/Release/Win32/
+!External Libraries/GLEW/lib/Release/Win32/**
+!External Libraries/GLEW/bin/Release/Win32/
+!External Libraries/GLEW/bin/Release/Win32/**
 *.vcxproj.user
 *.suo
 *.user
